@@ -1,0 +1,49 @@
+# ZeroSMM_Flask - Flask SMM + Telegram travel bot
+Flask==2.3.3
+Flask-SQLAlchemy==3.1.1
+Flask-Bcrypt==1.0.1
+python-dotenv==1.0.0
+
+# OpenAI API
+openai>=1.10.0
+
+# HTTP and parsing
+requests==2.31.0
+beautifulsoup4==4.13.5
+feedparser==6.0.10
+
+# WSGI and templates
+Werkzeug==2.3.7
+Jinja2==3.1.4
+MarkupSafe==3.0.2
+itsdangerous==2.2.0
+click==8.1.8
+blinker==1.9.0
+
+# SQLAlchemy and DB
+SQLAlchemy==2.0.38
+greenlet==3.1.1
+
+# Password hashing
+bcrypt==4.3.0
+
+# XML/HTML parsing
+lxml==6.0.1
+html5lib==1.1
+soupsieve==2.8
+
+# Date/time
+python-dateutil==2.9.0.post0
+
+# URLs and encoding
+charset-normalizer==3.4.3
+idna==3.10
+urllib3==2.5.0
+certifi==2025.8.3
+
+# Telegram bot
+python-telegram-bot==21.6
+
+# Scheduler for timed posts
+APScheduler==3.10.4
+pytz>=2024.1
