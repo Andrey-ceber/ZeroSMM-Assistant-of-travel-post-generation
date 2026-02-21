@@ -1,0 +1,2 @@
+# ZeroSMM-Assistant-of-travel-post-generation
+SMM-эксперт с ИИ для travel-блога: Telegram-бот и веб-панель. Генерация постов (GPT-4o) и картинок (DALL·E 3), публикация в Telegram и VK по расписанию, аналитика ответов и лайков. Python, Flask, OpenAI API.
