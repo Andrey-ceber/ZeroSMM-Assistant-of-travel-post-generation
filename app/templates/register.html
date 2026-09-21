@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+{% block title %}Регистрация — ZeroSMM{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+  <div class="col-md-6 col-lg-5">
+    <div class="card shadow-sm">
+      <div class="card-body">
+        <h1 class="h4 mb-4 text-center">Создать аккаунт</h1>
+
+        <form method="post">
+          <div class="mb-3">
+            <label for="username" class="form-label">Логин</label>
+            <input type="text" class="form-control" id="username"
+                   name="username" required>
+          </div>
+
+          <div class="mb-3">
+            <label for="email" class="form-label">Email</label>
+            <input type="email" class="form-control" id="email"
+                   name="email" required>
+          </div>
+
+          <div class="mb-3">
+            <label for="password" class="form-label">Пароль</label>
+            <input type="password" class="form-control" id="password"
+                   name="password" required>
+          </div>
+
+          <button type="submit" class="btn btn-success w-100 mb-3">
+            Зарегистрироваться
+          </button>
+
+          <div class="text-center">
+            <small class="text-muted">
+              Уже есть аккаунт?
+              <a href="{{ url_for('auth.login') }}">Войти</a>
+            </small>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

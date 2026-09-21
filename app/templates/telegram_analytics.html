@@ -1,0 +1,86 @@
+{% extends "base.html" %}
+{% block title %}Аналитика Telegram — ZeroSMM{% endblock %}
+
+{% block content %}
+<div class="row">
+  <div class="col">
+    <h1 class="h3 mb-4">Аналитика вовлечённости (Telegram)</h1>
+    <p class="text-muted">
+      Данные из лога публикаций. <strong>TG: ответы</strong> — считаются только ответы на сообщение бота (реакции/лайки в Telegram через Bot API недоступны).
+      <strong>VK: лайки и коммент.</strong> — подтягиваются из VK при открытии страницы; обновите страницу, чтобы увидеть актуальные цифры.
+    </p>
+    {% if vk_stats_error %}
+    <div class="alert alert-warning mt-2 mb-0" role="alert">Не удалось загрузить лайки/комментарии из VK: {{ vk_stats_error }}</div>
+    {% endif %}
+</div>
+</div>
+
+<div class="row g-3 mb-4">
+  <div class="col-md-4">
+    <div class="card shadow-sm">
+      <div class="card-body">
+        <h5 class="card-title text-muted small">Всего публикаций</h5>
+        <p class="mb-0 display-6">{{ total_posts }}</p>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-4">
+    <div class="card shadow-sm">
+      <div class="card-body">
+        <h5 class="card-title text-muted small">Всего ответов на посты</h5>
+        <p class="mb-0 display-6">{{ total_replies }}</p>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-4">
+    <div class="card shadow-sm">
+      <div class="card-body">
+        <h5 class="card-title text-muted small">Среднее ответов на пост</h5>
+        <p class="mb-0 display-6">{{ avg_replies }}</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="card shadow-sm">
+  <div class="card-header">
+    <h5 class="mb-0">Последние публикации</h5>
+  </div>
+  <div class="card-body p-0">
+    {% if last_entries %}
+    <div class="table-responsive">
+      <table class="table table-hover mb-0">
+        <thead class="table-light">
+          <tr>
+            <th>Дата и время</th>
+            <th>Рубрика</th>
+            <th>Направление</th>
+            <th>Тон</th>
+            <th>TG: ответы</th>
+            <th>VK: лайки</th>
+            <th>VK: коммент.</th>
+            <th>VK post_id</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for e in last_entries %}
+          <tr>
+            <td>{{ e.get('datetime_iso', '')[:19].replace('T', ' ') }}</td>
+            <td>{{ e.get('rubric', '') }}</td>
+            <td>{{ e.get('destination', '') }}</td>
+            <td>{{ e.get('tone', '') }}</td>
+            <td>{{ e.get('replies_count', 0) }}</td>
+            <td>{{ e.get('vk_likes_count') if e.get('vk_post_id') and e.get('vk_likes_count') is not none else '—' }}</td>
+            <td>{{ e.get('vk_comments_count') if e.get('vk_post_id') and e.get('vk_comments_count') is not none else '—' }}</td>
+            <td>{{ e.get('vk_post_id', '') or '—' }}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    {% else %}
+    <p class="mb-0 p-4 text-muted">Публикаций пока нет. Данные появятся после постов из бота или веб-ассистента.</p>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}

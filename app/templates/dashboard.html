@@ -1,0 +1,80 @@
+{% extends "base.html" %}
+{% block title %}Дашборд — ZeroSMM{% endblock %}
+
+{% block content %}
+<h1 class="h3 mb-4">Привет, {{ user.username }}!</h1>
+
+<div class="row g-3">
+  <div class="col-md-4">
+    <div class="card h-100 shadow-sm">
+      <div class="card-body">
+        <h5 class="card-title">Travel-посты</h5>
+        <p class="card-text">
+          Генерация текста и изображений, публикация в Telegram и VK.
+        </p>
+        <a href="{{ url_for('smm.assistant') }}" class="btn btn-primary">
+          Открыть ассистента
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-md-4">
+    <div class="card h-100 shadow-sm">
+      <div class="card-body">
+        <h5 class="card-title">VK-настройки</h5>
+        <p class="card-text">
+          API-токен и ID сообщества для работы с VK.
+        </p>
+        <a href="{{ url_for('smm.settings') }}"
+           class="btn btn-outline-primary">
+          Настроить VK
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-md-4">
+    <div class="card h-100 shadow-sm">
+      <div class="card-body">
+        <h5 class="card-title">Статистика VK</h5>
+        <p class="card-text">
+          Аналитика по охвату, подписчикам и вовлечённости.
+        </p>
+        <a href="{{ url_for('smm.vk_stats') }}"
+           class="btn btn-outline-secondary">
+          Посмотреть статистику
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-md-4">
+    <div class="card h-100 shadow-sm">
+      <div class="card-body">
+        <h5 class="card-title">Аналитика Telegram</h5>
+        <p class="card-text">
+          Вовлечённость: ответы на посты бота, последние публикации.
+        </p>
+        <a href="{{ url_for('smm.telegram_analytics') }}" class="btn btn-outline-primary">
+          Открыть аналитику
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-md-4">
+    <div class="card h-100 shadow-sm">
+      <div class="card-body">
+        <h5 class="card-title">Расписание</h5>
+        <p class="card-text">
+          Время и частота автопубликаций в Telegram.
+        </p>
+        <a href="{{ url_for('smm.scheduler_page') }}" class="btn btn-outline-primary">
+          Настроить расписание
+        </a>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

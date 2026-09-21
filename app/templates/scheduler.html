@@ -1,0 +1,100 @@
+{% extends "base.html" %}
+{% block title %}Расписание публикаций — ZeroSMM{% endblock %}
+
+{% block content %}
+<div class="row">
+  <div class="col-lg-8">
+    <h1 class="h3 mb-4">Расписание публикаций</h1>
+    <p class="text-muted">Настройки используются Telegram-ботом при запуске. Изменения здесь сохраняются в <code>data/bot_settings.json</code>; бот подхватит их при следующем запуске или после команды <code>/set_schedule</code> в Telegram.</p>
+
+    <div class="card shadow-sm mb-4">
+      <div class="card-body">
+        <h5 class="card-title">Текущее состояние</h5>
+        <ul class="list-unstyled mb-0">
+          <li><strong>Целевой чат (ID):</strong> {{ target_chat_id or 'не задан (используется TELEGRAM_CHAT_ID из .env)' }}</li>
+          <li><strong>Направление:</strong> {{ destination or 'случайное при каждой публикации' }}</li>
+          <li><strong>Часовой пояс:</strong> {{ timezone }}</li>
+          <li><strong>Расписание включено:</strong> {{ 'да' if schedule.get('enabled') else 'нет' }}</li>
+          <li><strong>Время публикации:</strong> {{ schedule.get('time', '—') }}</li>
+          <li><strong>Частота:</strong> {{ schedule.get('frequency', 'daily') }}</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="card shadow-sm mb-4">
+      <div class="card-header">Изменить расписание</div>
+      <div class="card-body">
+        <form method="post" action="{{ url_for('smm.scheduler_page') }}">
+          <div class="mb-3">
+            <div class="form-check form-switch">
+              <input class="form-check-input" type="checkbox" name="schedule_enabled" value="1" id="schedule_enabled"
+                     {% if schedule.get('enabled') %}checked{% endif %}>
+              <label class="form-check-label" for="schedule_enabled">Включить публикации по расписанию</label>
+            </div>
+          </div>
+          <div class="mb-3">
+            <label for="schedule_time" class="form-label">Время публикации (HH:MM)</label>
+            <input type="text" class="form-control" id="schedule_time" name="schedule_time"
+                   value="{{ schedule.get('time', '09:30') }}" placeholder="09:30">
+          </div>
+          <div class="mb-3">
+            <label for="schedule_frequency" class="form-label">Частота</label>
+            <select class="form-select" id="schedule_frequency" name="schedule_frequency">
+              <option value="daily" {% if schedule.get('frequency') == 'daily' %}selected{% endif %}>Ежедневно</option>
+              <option value="mon,wed,fri" {% if schedule.get('frequency') == 'mon,wed,fri' %}selected{% endif %}>Пн, Ср, Пт</option>
+              <option value="mon,tue,wed,thu,fri" {% if schedule.get('frequency') == 'mon,tue,wed,thu,fri' %}selected{% endif %}>Пн–Пт</option>
+            </select>
+          </div>
+          <div class="mb-3">
+            <label for="schedule_destination" class="form-label">Туристическое направление</label>
+            <input type="text" class="form-control" id="schedule_destination" name="schedule_destination"
+                   value="{{ destination }}" placeholder="Например: Стамбул, Тбилиси, Сочи">
+            <div class="form-text">Оставьте пустым — при каждой публикации по расписанию будет выбираться случайное направление из списка.</div>
+          </div>
+
+          <h6 class="mt-4 mb-2">Контент-план по дням недели</h6>
+          <p class="text-muted small">Рубрика поста для каждого дня. По расписанию бот подставляет рубрику по дню.</p>
+          <div class="table-responsive">
+            <table class="table table-sm">
+              <thead class="table-light">
+                <tr>
+                  <th>Пн</th>
+                  <th>Вт</th>
+                  <th>Ср</th>
+                  <th>Чт</th>
+                  <th>Пт</th>
+                  <th>Сб</th>
+                  <th>Вс</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  {% for i in range(7) %}
+                  <td>
+                    <select class="form-select form-select-sm" name="content_plan_{{ i }}" id="content_plan_{{ i }}">
+                      {% for value, label in rubric_options %}
+                      <option value="{{ value }}" {% if content_plan_list[i] == value %}selected{% endif %}>{{ label }}</option>
+                      {% endfor %}
+                    </select>
+                  </td>
+                  {% endfor %}
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <button type="submit" class="btn btn-primary">Сохранить</button>
+        </form>
+      </div>
+    </div>
+  </div>
+  <div class="col-lg-4">
+    <div class="card shadow-sm border-info">
+      <div class="card-body">
+        <h6 class="card-title">Как задать целевой чат</h6>
+        <p class="small mb-0">Целевой чат для публикаций задаётся в Telegram: добавьте бота в группу/канал и отправьте команду <code>/set_target</code> в этом чате. Либо укажите <code>TELEGRAM_CHAT_ID</code> в <code>.env</code>.</p>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

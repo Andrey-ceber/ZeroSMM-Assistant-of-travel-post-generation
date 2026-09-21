@@ -1,0 +1,203 @@
+{% extends "base.html" %}
+{% block title %}Статистика VK — ZeroSMM{% endblock %}
+
+{% block content %}
+<h1 class="h4 mb-4">Статистика VK</h1>
+
+<!-- Публикации в VK из лога (как в аналитике Telegram) -->
+<div class="card shadow-sm mb-4">
+  <div class="card-header">
+    <h5 class="mb-0">Публикации в VK</h5>
+  </div>
+  <div class="card-body p-0">
+    <p class="text-muted small mb-0 px-3 pt-2">Данные из лога публикаций. Всего записей с публикацией в VK: <strong>{{ stats.total_vk_posts }}</strong>. Лайки и комментарии загружаются из VK при открытии страницы — <strong>обновите страницу</strong>, чтобы увидеть актуальные значения.</p>
+    {% if stats.vk_stats_error %}
+    <div class="alert alert-warning mx-3 mt-2 mb-2 small" role="alert">Не удалось загрузить лайки/комментарии из VK: {{ stats.vk_stats_error }}</div>
+    {% endif %}
+    {% if stats.last_vk_entries %}
+    <div class="table-responsive">
+      <table class="table table-hover mb-0">
+        <thead class="table-light">
+          <tr>
+            <th>Дата и время</th>
+            <th>Рубрика</th>
+            <th>Направление</th>
+            <th>Тон</th>
+            <th>TG: ответы</th>
+            <th>VK: лайки</th>
+            <th>VK: коммент.</th>
+            <th>VK post_id</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for e in stats.last_vk_entries %}
+          <tr>
+            <td>{{ e.get('datetime_iso', '')[:19].replace('T', ' ') }}</td>
+            <td>{{ e.get('rubric', '') }}</td>
+            <td>{{ e.get('destination', '') }}</td>
+            <td>{{ e.get('tone', '') }}</td>
+            <td>{{ e.get('replies_count', 0) }}</td>
+            <td>{{ e.get('vk_likes_count') if e.get('vk_likes_count') is not none else '—' }}</td>
+            <td>{{ e.get('vk_comments_count') if e.get('vk_comments_count') is not none else '—' }}</td>
+            <td>{{ e.get('vk_post_id', '') or '—' }}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    {% else %}
+    <p class="mb-0 p-4 text-muted">Публикаций в VK пока нет. Они появятся после кросспостинга из веб-ассистента или бота.</p>
+    {% endif %}
+  </div>
+</div>
+
+<!-- Статистика сообщества из VK API -->
+<h2 class="h5 mb-3">Статистика сообщества (VK API)</h2>
+{% if stats.error %}
+    <div class="alert alert-warning" role="alert">
+        <strong>Не удалось загрузить статистику сообщества:</strong> {{ stats.error }}
+        <br><span class="small">Проверьте VK API ключ и ID группы в настройках. Публикации выше — из нашего лога.</span>
+    </div>
+{% else %}
+    <p class="text-muted small mb-3">Просмотры, охват, демография за последние 7 дней. Если везде нули — в группе могла не быть активность за период или у токена нет прав stats.</p>
+    <div class="row g-4">
+        <!-- Ежедневная статистика -->
+        <div class="col-lg-12">
+            <div class="card shadow-sm">
+                <div class="card-body">
+                    <h2 class="h5 mb-3">Динамика по дням</h2>
+                    <div class="table-responsive">
+                        <table class="table table-striped table-hover">
+                            <thead>
+                                <tr>
+                                    <th>Дата</th>
+                                    <th class="text-end">Просмотры</th>
+                                    <th class="text-end">Посетители</th>
+                                    <th class="text-end">Лайки</th>
+                                    <th class="text-end">Репосты</th>
+                                    <th class="text-end">Комментарии</th>
+                                    <th class="text-end">Подписчики</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for day in stats.daily_stats %}
+                                <tr>
+                                    <td>{{ day.date }}</td>
+                                    <td class="text-end">{{ day.views }}</td>
+                                    <td class="text-end">{{ day.visitors }}</td>
+                                    <td class="text-end">{{ day.likes }}</td>
+                                    <td class="text-end">{{ day.shares }}</td>
+                                    <td class="text-end">{{ day.comments }}</td>
+                                    <td class="text-end">{{ day.subscribers }}</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Сводная статистика -->
+        <div class="col-lg-6">
+            <div class="card shadow-sm h-100">
+                <div class="card-body">
+                    <h2 class="h5 mb-3">Лайки и подписчики</h2>
+                    <table class="table table-sm">
+                        <tbody>
+                            <tr>
+                                <td><strong>Всего лайков</strong></td>
+                                <td class="text-end">{{ stats.aggregated_stats.total_likes }}</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Изменение подписчиков</strong></td>
+                                <td class="text-end">{{ stats.aggregated_stats.total_subscribers_delta }}</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-6">
+            <div class="card shadow-sm h-100">
+                <div class="card-body">
+                    <h2 class="h5 mb-3">Пол</h2>
+                    <table class="table table-sm">
+                        <tbody>
+                            {% for sex, count in stats.aggregated_stats.sex_dist.items() %}
+                            <tr>
+                                <td>{% if sex == 'm' %}Мужчины{% elif sex == 'f' %}Женщины{% else %}{{ sex }}{% endif %}</td>
+                                <td class="text-end">{{ count }}</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-6">
+            <div class="card shadow-sm h-100">
+                <div class="card-body">
+                    <h2 class="h5 mb-3">Возраст</h2>
+                    <div class="table-responsive">
+                        <table class="table table-sm">
+                            <tbody>
+                                {% for age, count in stats.aggregated_stats.age_dist.items() %}
+                                <tr>
+                                    <td>{{ age }}</td>
+                                    <td class="text-end">{{ count }}</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-6">
+            <div class="card shadow-sm h-100">
+                <div class="card-body">
+                    <h2 class="h5 mb-3">Города (топ 10)</h2>
+                    <div class="table-responsive">
+                        <table class="table table-sm">
+                            <tbody>
+                                {% for city, count in stats.aggregated_stats.cities_dist.items() %}
+                                {% if loop.index <= 10 %}
+                                <tr>
+                                    <td>{{ city }}</td>
+                                    <td class="text-end">{{ count }}</td>
+                                </tr>
+                                {% endif %}
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-12">
+            <div class="card shadow-sm">
+                <div class="card-body">
+                    <h2 class="h5 mb-3">Страны</h2>
+                    <div class="table-responsive">
+                        <table class="table table-sm">
+                            <tbody>
+                                {% for country, count in stats.aggregated_stats.countries_dist.items() %}
+                                <tr>
+                                    <td>{{ country }}</td>
+                                    <td class="text-end">{{ count }}</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endif %}
+{% endblock %}

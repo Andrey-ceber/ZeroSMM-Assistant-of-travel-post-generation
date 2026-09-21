@@ -23,7 +23,7 @@ group_id = os.getenv("VK_GROUP_ID") or os.getenv("group_id") or None
 telegram_bot_token = os.getenv("TELEGRAM_BOT_TOKEN")
 telegram_chat_id = os.getenv("TELEGRAM_CHAT_ID")
 
-newsapi_key = os.getenv("NEWSAPI_KEY", "c7745e48b2c040fe95edc787938b333f")
+newsapi_key = os.getenv("NEWSAPI_KEY")
 
 # Telegram параметры опциональны (не требуем их обязательного наличия)
 
